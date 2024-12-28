@@ -68,5 +68,3 @@ curl -X POST -H "Host: localhost" \
 - Basic content type validation (doesn't verify actual content format)
 - No support for query parameters
 - No support for request headers besides Host and Content-Type
-- No support for response compression
-- No caching mechanisms
