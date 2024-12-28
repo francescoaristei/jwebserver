@@ -51,8 +51,6 @@ public class HttpResponseBuilder {
                 .append(status.getStatus())
                 .append(" ")
                 .append(status.getMessage())
-                .append("\r\n")
-                .append("Content-type: ")
                 .append("\r\n\r\n")
                 .append(fileContent);
     }

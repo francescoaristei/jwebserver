@@ -8,7 +8,7 @@ public class HttpValidator {
     }
 
     public static boolean isValidContentType(String contentType) {
-        return ALLOWED_CONTENT_TYPES.contains(contentType);
+        return ALLOWED_CONTENT_TYPES.containsValue(contentType);
     }
 
     public static boolean isValidHttpVersion(String httpVersion) {

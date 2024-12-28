@@ -8,10 +8,11 @@ import org.example.http.errors.InvalidHttpRequestLineException;
 import org.example.http.util.HttpResponseBuilder;
 import org.example.http.util.HttpValidator;
 import org.example.http.util.ResourceManager;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Map;
+
+import static org.example.http.HttpConfiguration.ALLOWED_CONTENT_TYPES;
 
 public class HttpRequestHandler {
     private final Socket socket;
@@ -27,7 +28,7 @@ public class HttpRequestHandler {
 
     public void generateHttpResponse(){
         try(
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))
         ) {
             HttpRequestLine httpRequestLine = this.httpRequestParser.parseHttpRequestLine();
             Map<String, String> httpRequestHeaders = this.httpRequestParser.parseHttpRequestHeaders();
@@ -102,12 +103,13 @@ public class HttpRequestHandler {
                 fileContent.append(line);
                 fileContent.append("\n");
             }
+            httpPath = httpPath.equals("/") ? "index.html": httpPath;
             this.httpResponse = HttpResponseBuilder
                     .generateHttpGetResponse(
                             httpRequestLine.getHttpVersion(),
                             HttpResponseStatus.OK,
                             fileContent,
-                            ResourceManager.getFileExtensions(httpPath)
+                            ALLOWED_CONTENT_TYPES.get(ResourceManager.getFileExtensions(httpPath))
                     );
         } catch(IOException e) {
             logger.error("URI path not valid: no such file or directory.");
