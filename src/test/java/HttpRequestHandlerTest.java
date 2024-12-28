@@ -265,10 +265,48 @@ public class HttpRequestHandlerTest {
             when(mockedSever.getOutputStream()).thenReturn(mockedSocketOutputStream);
             when(mockedSever.getInputStream()).thenReturn(mockedSocketInputStream);
             when(mockedParser.parseHttpRequestLine()).thenReturn(
-                    new HttpRequestLine("HTTP/1.2", null, "/"));
+                    new HttpRequestLine("HTTP/1.2", "GET", "/"));
             when(mockedParser.parseHttpRequestHeaders()).thenReturn(
                     Map.of(
                             "host", "localhost"
+                    )
+            );
+
+            // exercise
+            testHttpRequestHandler.generateHttpResponse();
+
+            // assert
+            assertEquals(outputResponseString.toString(), mockedSocketOutputStream.toString());
+        } catch(IOException | InvalidHttpRequestException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testReturnInternalServerErrorOnWrongHostInHeaders() {
+        try {
+            // setup
+            inputRequestString
+                    .append("GET")
+                    .append(" ")
+                    .append("/")
+                    .append(" ")
+                    .append("HTTP/1.1")
+                    .append("\r\n")
+                    .append("Host: wrong host")
+                    .append("\r\n\r\n");
+            outputResponseString
+                    .append("HTTP/1.1 500 Internal Server Error")
+                    .append("\r\n\r\n");
+            mockedSocketOutputStream = new ByteArrayOutputStream();
+            mockedSocketInputStream = new ByteArrayInputStream(inputRequestString.toString().getBytes());
+            when(mockedSever.getOutputStream()).thenReturn(mockedSocketOutputStream);
+            when(mockedSever.getInputStream()).thenReturn(mockedSocketInputStream);
+            when(mockedParser.parseHttpRequestLine()).thenReturn(
+                    new HttpRequestLine("HTTP/1.1", "GET", "/"));
+            when(mockedParser.parseHttpRequestHeaders()).thenReturn(
+                    Map.of(
+                            "host", "wrong host"
                     )
             );
 

@@ -13,7 +13,7 @@ public class PathValidator {
         normalizedPath = normalizedPath.replaceAll("^[/\\\\]+", "");
 
         if (normalizedPath.contains("..")) {
-            throw new InvalidHttpRequestLineException("Cannot access resources outside allowed folder.");
+            throw new InvalidHttpRequestLineException("Cannot read/write resources outside allowed folders.");
         }
 
         if (!VALID_PATH_PATTERN.matcher(normalizedPath).matches()) {

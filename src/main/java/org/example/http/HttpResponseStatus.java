@@ -8,7 +8,7 @@ public enum HttpResponseStatus {
     FORBIDDEN(403, "Forbidden"),
     BAD_REQUEST(400, "Bad Request"),
     CREATED(201, "Created"),
-    UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type: Content-Type not supported")
+    UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type: Content-Type not supported"),
     ;
 
     private final int status;

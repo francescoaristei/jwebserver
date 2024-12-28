@@ -4,8 +4,6 @@ import org.example.http.errors.InvalidHttpBodyException;
 import org.example.http.errors.InvalidHttpHeaderException;
 import org.example.http.errors.InvalidHttpRequestException;
 import org.example.http.errors.InvalidHttpRequestLineException;
-import org.example.http.util.HttpValidator;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +35,7 @@ public class HttpRequestParser {
         } else if(this.httpRequestHeaders.containsKey("transfer-encoding")) {
             this.readHttpChunkedBody();
         } else {
-            throw new InvalidHttpHeaderException("Both content-length or transfer-encoding missing.");
+            return null;
         }
         return this.httpRequestBody;
     }
@@ -48,9 +46,6 @@ public class HttpRequestParser {
         String[] requestLineComponents = requestLine.split("\\s+");
         if (!(requestLineComponents.length == 3)) {
             throw new InvalidHttpRequestLineException("HTTP method, URI and HTTP version must be provided.");
-        }
-        if (!(HttpValidator.isValidHttpVersion(requestLineComponents[2]))) {
-            throw new InvalidHttpRequestLineException("HTTP version is not correct.");
         }
         String httpMethod = requestLineComponents[0];
         String uriPath = requestLineComponents[1];
@@ -184,7 +179,7 @@ public class HttpRequestParser {
     }
 
     // do not allow new line without preceding '\r'
-    private void readHttpHeaders() throws IOException, InvalidHttpRequestException {
+    private void readHttpHeaders() throws IOException, InvalidHttpHeaderException {
         StringBuilder headersBuilder = new StringBuilder();
         boolean wasNewLine = true;
         int byteValue;
@@ -198,10 +193,10 @@ public class HttpRequestParser {
                     headersBuilder = new StringBuilder();
                     wasNewLine = true;
                 } else {
-                    throw new InvalidHttpRequestException("Illegal character after return.");
+                    throw new InvalidHttpHeaderException("Illegal character after return.");
                 }
             } else if (byteValue == '\n') { // new line without preceding '\r'
-                throw new InvalidHttpRequestException("Illegal character after return.");
+                throw new InvalidHttpHeaderException("Illegal character after return.");
             } else {
                 headersBuilder.append((char) byteValue);
                 wasNewLine = false;
